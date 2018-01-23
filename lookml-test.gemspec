@@ -7,10 +7,10 @@ Gem::Specification.new do |spec|
   spec.name          = "lookml-test"
   spec.version       = Lookml::Test::VERSION
   spec.authors       = ["Wil Gieseler"]
-  spec.email         = ["wil@wilgieseler.com"]
+  spec.email         = ["opensource+lookmltest@looker.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
+  spec.summary       = "A test runner for LookML."
+  spec.description   = "Test your LookML code."
   spec.homepage      = "TODO: Put your gem's website or public repo URL here."
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
@@ -29,6 +29,10 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "dotenv"
+  spec.add_dependency "looker-sdk"
+
   spec.add_development_dependency "bundler", "~> 1.14"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rspec", "~> 3.2"
 end
