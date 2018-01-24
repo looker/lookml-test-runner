@@ -3,9 +3,10 @@ module LookMLTest
 
     class LookMLTestFailure < StandardError; end
 
-    def initialize(sdk:, remote_url:, branch:)
+    def initialize(sdk:, remote_url:, branch: nil, email: nil)
       @sdk = sdk
       @branch = branch
+      @email = email
       @remote_url = remote_url
 
       ensure_in_relevant_project!
@@ -24,21 +25,27 @@ module LookMLTest
     private def ensure_in_relevant_project!
       if @sdk.respond_to?(:project_checkout_branch)
         puts "Using checkout strategy: normal"
+        unless @branch
+          raise LookMLTestFailure.new("A branch name is required for normal checkout strategy.")
+        end
         enter_dev_mode!
         @sdk.project_checkout_branch project_id: project.id, branch_name: @branch
         @sdk.project_pull_branch project_id: project.id
       else
         puts "Using checkout strategy: jank"
+        unless @email
+          raise LookMLTestFailure.new("A author email is required for jank checkout strategy.")
+        end
         # This is a janky workaround for versions of Looker that don't have
         # branch checkout APIs
-        author_email = `git log -1 --pretty=format:'%ae'`
-        user = @sdk.search_users(email: author_email, is_disabled: false).first
+        user = @sdk.search_users(email: @email, is_disabled: false).first
         unless user
-          raise LookMLTestFailure.new("Could not determine the correct Looker user for email #{author_email}")
+          raise LookMLTestFailure.new("Could not determine the correct Looker user for email #{@email}")
         end
         # Replace the SDK with the SDK for the sudoed user
+        sudo_token = @sdk.login_user(user.id).access_token
         @sdk = LookerSDK::Client.new({
-          access_token: @sdk.login_user(user.id),
+          access_token: sudo_token,
           api_endpoint: @sdk.api_endpoint,
           connection_options: @sdk.connection_options,
         })

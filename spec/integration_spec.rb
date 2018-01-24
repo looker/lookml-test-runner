@@ -13,6 +13,7 @@ describe "integration test" do
     @runner = LookMLTest::Runner.new(
       sdk: @sdk,
       branch: ENV['INTEGRATION_TEST_BRANCH'],
+      email: ENV['INTEGRATION_TEST_AUTHOR_EMAIL'],
       remote_url: ENV['INTEGRATION_TEST_GIT_REMOTE'],
     )
   end
