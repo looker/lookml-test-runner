@@ -3,7 +3,7 @@ require 'lookml/test'
 describe "integration test" do
 
   before do
-    @sdk = LookerSDK::Client.new(
+    sdk = LookerSDK::Client.new(
       client_id: ENV['INTEGRATION_TEST_CLIENT_ID'],
       client_secret: ENV['INTEGRATION_TEST_CLIENT_SECRET'],
       api_endpoint: ENV['INTEGRATION_TEST_API_ENDPOINT'],

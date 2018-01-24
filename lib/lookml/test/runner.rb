@@ -5,6 +5,20 @@ module LookMLTest
 
     attr_reader :sdk
 
+    def self.runner
+      sdk = LookerSDK::Client.new(
+        client_id: ENV['LOOKER_TEST_RUNNER_CLIENT_ID'],
+        client_secret: ENV['LOOKER_TEST_RUNNER_CLIENT_SECRET'],
+        api_endpoint: ENV['LOOKER_TEST_RUNNER_ENDPOINT'],
+      )
+      return LookMLTest::Runner.new(
+        sdk: sdk,
+        branch: ENV['TRAVIS_BRANCH'] || ENV['CIRCLE_BRANCH'],
+        email: `git log -1 --pretty=format:'%ae'`.strip,
+        remote_url: `git config --get remote.origin.url`.strip,
+      )
+    end
+
     def initialize(sdk:, remote_url:, branch: nil, email: nil)
       @sdk = sdk
       @branch = branch
