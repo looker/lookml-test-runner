@@ -1,36 +1,69 @@
-# Lookml::Test
+# Setup
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/lookml/test`. To experiment with that code, run `bin/console` for an interactive prompt.
+### 1. Create new user on Looker instance
 
-TODO: Delete this and the text above, and describe your gem
+Make sure this user has:
 
-## Installation
+- API credentials
+- the admin role
 
-Add this line to your application's Gemfile:
+### 2. Add environmental variables to your CI tool
 
-```ruby
-gem 'lookml-test'
+`LOOKER_TEST_RUNNER_CLIENT_ID` = client ID for test user
+`LOOKER_TEST_RUNNER_CLIENT_SECRET` = client secret for the test user
+`LOOKER_TEST_RUNNER_ENDPOINT` = the API endpoint to use for tests
+
+#### Test Branch
+
+`lookml-test-runner` automatically looks for either `TRAVIS_BRANCH` or `CIRCLE_BRANCH` (in that order) to determine the branch to use for tests, so make sure one of these is set
+
+### 3. Add test code and Gemfile to your repository
+
+#### Example
+
+`Gemfile`
+
+```
+source "https://rubygems.org"
+
+gem "lookml-test-runner", git: "https://github.com/looker/lookml-test-runner.git"
+gem "minitest"
+
+# other Gems you need for testing
 ```
 
-And then execute:
+`.travis.yml`
 
-    $ bundle
+```
+script: ruby test.rb
+```
 
-Or install it yourself as:
+`test.rb`
 
-    $ gem install lookml-test
+```
+require "bundler/setup"
+require "minitest/autorun"
+require 'lookml/test'
 
-## Usage
+class TestLookML < Minitest::Test
+  def setup
+    @runner = LookML::Test::Runner.runner
+  end
 
-TODO: Write usage instructions here
+  def test_basic
+    result = @runner.sdk.run_inline_query("json_detail", {
+      model: "lookml_test_test_fun",
+      view: "users",
+      fields: ["users.id"],
+      sorts: ["users.id asc"],
+      limit: 1,
+    })
+    assert_equal(result.data[0]["users.id"].value, 1)
+  end
+end
+```
 
-## Development
+### 4. Make sure Looker repository has pull requests enabled/required
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/Wil Gieseler/lookml-test.
-
+### 5. Success!
+:boom:
