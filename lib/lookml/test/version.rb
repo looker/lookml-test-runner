@@ -1,4 +1,4 @@
-module Lookml
+module LookML
   module Test
     VERSION = "0.1.0"
   end

@@ -10,7 +10,7 @@ describe "integration test" do
       connection_options: {ssl: {verify: false}}
     )
 
-    @runner = LookMLTest::Runner.new(
+    @runner = LookML::Test::Runner.new(
       sdk: sdk,
       branch: ENV['INTEGRATION_TEST_BRANCH'],
       email: ENV['INTEGRATION_TEST_AUTHOR_EMAIL'],

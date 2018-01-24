@@ -4,14 +4,14 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'lookml/test/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "lookml-test"
-  spec.version       = Lookml::Test::VERSION
+  spec.name          = "lookml-test-runner"
+  spec.version       = LookML::Test::VERSION
   spec.authors       = ["Wil Gieseler"]
   spec.email         = ["opensource+lookmltest@looker.com"]
 
   spec.summary       = "A test runner for LookML."
   spec.description   = "Test your LookML code."
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.homepage      = "https://github.com/looker/lookml-test-runner"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
