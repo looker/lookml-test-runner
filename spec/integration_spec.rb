@@ -11,15 +11,22 @@ describe "integration test" do
     )
 
     @runner = LookMLTest::Runner.new(
-      sdk: @sdk,
+      sdk: sdk,
       branch: ENV['INTEGRATION_TEST_BRANCH'],
       email: ENV['INTEGRATION_TEST_AUTHOR_EMAIL'],
       remote_url: ENV['INTEGRATION_TEST_GIT_REMOTE'],
     )
   end
 
-  it "works" do
-
+  it "runs a basic assertion" do
+    result = @runner.sdk.run_inline_query("json_detail", {
+      model: "wil_development",
+      view: "users",
+      fields: ["users.id"],
+      sorts: ["users.id asc"],
+      limit: 1,
+    })
+    expect(result.data[0]["users.id"].value).to eq(1)
   end
 
 end

@@ -3,6 +3,8 @@ module LookMLTest
 
     class LookMLTestFailure < StandardError; end
 
+    attr_reader :sdk
+
     def initialize(sdk:, remote_url:, branch: nil, email: nil)
       @sdk = sdk
       @branch = branch
