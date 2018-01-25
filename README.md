@@ -1,69 +1,73 @@
-# Setup
+# LookML Test Runner
 
-### 1. Create new user on Looker instance
+An experimental test runner for LookML models. Designed to be used with continuous integration services like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/) (or anything else).
 
-Make sure this user has:
+## How to Set Up
 
-- API credentials
-- the admin role
+1. Create a Test Runner user in Looker
 
-### 2. Add environmental variables to your CI tool
+    Create a new user in Looker that will serve as a "machine user" to run tests. That user should have an administrator role.
 
-`LOOKER_TEST_RUNNER_CLIENT_ID` = client ID for test user
-`LOOKER_TEST_RUNNER_CLIENT_SECRET` = client secret for the test user
-`LOOKER_TEST_RUNNER_ENDPOINT` = the API endpoint to use for tests
+    > :warning: Currently this user needs to be an administrator. Future APIs from Looker will enable the use of a less-permissioned user for running tests.
 
-#### Test Branch
+    You'll also need to get API credentials for this user.
 
-`lookml-test-runner` automatically looks for either `TRAVIS_BRANCH` or `CIRCLE_BRANCH` (in that order) to determine the branch to use for tests, so make sure one of these is set
+2. Enable your chosen CI service on the Git repository associated with your LookML project.
 
-### 3. Add test code and Gemfile to your repository
+3. Add environment variables to the CI service:
 
-#### Example
+    - `LOOKER_TEST_RUNNER_CLIENT_ID`
 
-`Gemfile`
+       client ID for test user
+    - `LOOKER_TEST_RUNNER_CLIENT_SECRET`
 
-```
-source "https://rubygems.org"
+      client secret for the test user
+    - `LOOKER_TEST_RUNNER_ENDPOINT`
+      the API endpoint to use for tests
 
-gem "lookml-test-runner", git: "https://github.com/looker/lookml-test-runner.git"
-gem "minitest"
+4. Add configuration files to your Git repository to configure the test runner:
 
-# other Gems you need for testing
-```
 
-`.travis.yml`
+    - Create a new file at the root of your repository called `Gemfile`. Add the following contents:
 
-```
-script: ruby test.rb
-```
+        ```gemfile
+        source "https://rubygems.org"
 
-`test.rb`
+        gem "lookml-test-runner", git: "https://github.com/looker/lookml-test-runner.git"
+        ```
 
-```
-require "bundler/setup"
-require "minitest/autorun"
-require 'lookml/test'
+    - Configure your CI service to use the test runner:
 
-class TestLookML < Minitest::Test
-  def setup
-    @runner = LookML::Test::Runner.runner
-  end
+       - For Travis CI:
 
-  def test_basic
-    result = @runner.sdk.run_inline_query("json_detail", {
-      model: "lookml_test_test_fun",
-      view: "users",
-      fields: ["users.id"],
-      sorts: ["users.id asc"],
-      limit: 1,
-    })
-    assert_equal(result.data[0]["users.id"].value, 1)
-  end
-end
-```
+          In a file called `.travis.yml`
 
-### 4. Make sure Looker repository has pull requests enabled/required
+          ```yaml
+          script: bundle exec lookml_tests
+          ```
 
-### 5. Success!
-:boom:
+    - Create test files
+
+      The test runner will find any file ending with `.test.yml` in your repository. For example: `tests.test.yml`.
+
+      Here's an example file for a fictional model:
+
+      ```yaml
+      - test: does anything work
+        query:
+          model: mymodel
+          view: myexplore
+          fields: ["myexplore.id"]
+          sorts: ["myexplore.id asc"]
+          limit: 1
+        assert:
+          - success
+      - test: what about a bad field
+        query:
+          model: mymodel
+          view: myexplore
+          fields: ["myexplore.average_age"]
+          limit: 1
+        assert:
+          - success
+      ```
