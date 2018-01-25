@@ -1,0 +1,18 @@
+- test: does anything work
+  query:
+    model: wil_development
+    view: users
+    fields: ["users.id"]
+    sorts: ["users.id asc"]
+    limit: 1
+  assert:
+    - success
+- test: what about a bad field
+  query:
+    model: wil_development
+    view: users
+    fields: ["users.hotto"]
+    sorts: ["users.id asc"]
+    limit: 1
+  assert:
+    - success

@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "lookml/test"
+require 'minitest/autorun'
+
+module LookML
+  module Test
+    class YAMLTestRunner
+
+      runner = Runner.runner
+      tests = LookML::Test::YAMLTestCollection.new(
+        dir: if ENV["TEST_DIR"] then File.expand_path(ENV["TEST_DIR"]) else Dir.pwd end
+      )
+      tests.groups.each do |group_name, tests|
+        describe group_name do
+          tests.each do |test|
+            it test.title do
+              assert *test.run!(runner)
+            end
+          end
+        end
+      end
+
+    end
+  end
+end

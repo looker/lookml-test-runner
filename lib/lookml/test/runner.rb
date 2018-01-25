@@ -11,12 +11,13 @@ module LookML
           client_id: ENV['LOOKER_TEST_RUNNER_CLIENT_ID'],
           client_secret: ENV['LOOKER_TEST_RUNNER_CLIENT_SECRET'],
           api_endpoint: ENV['LOOKER_TEST_RUNNER_ENDPOINT'],
+          connection_options: ENV['LOOKER_TEST_RUNNER_INSECURE'] == 'true' ? {ssl: {verify: false}} : {}
         )
         return new(
           sdk: sdk,
           branch: ENV['TRAVIS_BRANCH'] || ENV['CIRCLE_BRANCH'],
-          email: `git log -1 --pretty=format:'%ae'`.strip,
-          remote_url: `git config --get remote.origin.url`.strip,
+          email: ENV['LOOKER_TEST_RUNNER_EMAIL'] || `git log -1 --pretty=format:'%ae'`.strip,
+          remote_url: ENV['LOOKER_TEST_RUNNER_GIT_REMOTE'] || `git config --get remote.origin.url`.strip,
         )
       end
 
@@ -25,6 +26,9 @@ module LookML
         @branch = branch
         @email = email
         @remote_url = remote_url
+
+        # Ensure SDK is working
+        @sdk.alive
 
         ensure_in_relevant_project!
       end
