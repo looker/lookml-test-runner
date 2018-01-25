@@ -2,6 +2,10 @@
 
 An experimental test runner for LookML models. Designed to be used with continuous integration services like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/) (or anything else).
 
+> :warning: This is an experimental project, provided as-is without support. It is in an early phase and breaking changes may occur without warning.
+> 
+> See the [LICENSE](LICENSE) for more details.
+
 ## How to Set Up
 
 1. Create a Test Runner user in Looker
@@ -23,6 +27,7 @@ An experimental test runner for LookML models. Designed to be used with continuo
 
       client secret for the test user
     - `LOOKER_TEST_RUNNER_ENDPOINT`
+    
       the API endpoint to use for tests
 
 4. Add configuration files to your Git repository to configure the test runner:
@@ -62,6 +67,7 @@ An experimental test runner for LookML models. Designed to be used with continuo
           limit: 1
         assert:
           - success
+          
       - test: what about a bad field
         query:
           model: mymodel
