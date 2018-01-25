@@ -77,3 +77,58 @@ An experimental test runner for LookML models. Designed to be used with continuo
         assert:
           - success
       ```
+## Test Options
+
+```yaml
+- test: ID still exists
+  query:
+    model: mymodel
+    view: myexplore
+    fields: ["myexplore.id"]
+    sorts: ["myexplore.id asc"]
+    limit: 1
+  assert: success
+```
+
+- `test` – The test name
+- `query` – A definition of a query to run for your test. This accepts the same parameters as the [run query API](https://docs.looker.com/reference/api-and-integration/api-reference/query#run_inline_query)
+- `assert` a single assertion type, or an array of assertions
+
+### Assertion types
+
+- `success` – The query runs and returns no errors.
+
+## Custom Tests
+
+The YAML-based tests are meant to be a simple and easy-to-use way to get started testing and are editable from within the Looker IDE. If you have more complex tests you can still use this project to run them. Here's how:
+
+You can use any Ruby test runner to run your custom tests. In our example, we'll use Test::Unit.
+
+Create a Ruby file and add it to your project. In this example we've created a file called `advanced_tests.rb`:
+
+```
+require "bundler/setup"
+require "minitest/autorun"
+require 'lookml/test'
+
+class TestLookML < Minitest::Test
+  def setup
+    @runner = LookML::Test::Runner.runner
+  end
+
+  def test_basic
+    result = @runner.sdk.run_inline_query("json_detail", {
+      model: "lookml_test_test_fun",
+      view: "users",
+      fields: ["users.id"],
+      sorts: ["users.id asc"],
+      limit: 1,
+    })
+    assert_equal(result.data[0]["users.id"].value, 1)
+  end
+end
+```
+
+You can then use `@runner.sdk` to run any operations you want. The SDK will automatically be placed into the correct developer mode environment for your tests to run.
+
+Then just modify the `script` in your CI configuration to `bundle exec lookml_tests && bundle exec ruby advanced_tests.rb`.
