@@ -65,8 +65,7 @@ An experimental test runner for LookML models. Designed to be used with continuo
           fields: ["myexplore.id"]
           sorts: ["myexplore.id asc"]
           limit: 1
-        assert:
-          - success
+        assert: success
           
       - test: what about a bad field
         query:
@@ -74,8 +73,7 @@ An experimental test runner for LookML models. Designed to be used with continuo
           view: myexplore
           fields: ["myexplore.average_age"]
           limit: 1
-        assert:
-          - success
+        assert: success
       ```
 ## Test Options
 
@@ -106,7 +104,7 @@ You can use any Ruby test runner to run your custom tests. In our example, we'll
 
 Create a Ruby file and add it to your project. In this example we've created a file called `advanced_tests.rb`:
 
-```
+```ruby
 require "bundler/setup"
 require "minitest/autorun"
 require 'lookml/test'
